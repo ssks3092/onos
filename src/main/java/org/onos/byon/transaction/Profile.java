@@ -32,4 +32,19 @@ public class Profile {
     public void setProfileInfo(ProfileInfo profileInfo) {
         this.profileInfo = profileInfo;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Profile profile = (Profile) o;
+
+        return id != null ? id.equals(profile.id) : profile.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

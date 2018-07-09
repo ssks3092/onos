@@ -36,17 +36,22 @@ public class ListNetworkCommand extends AbstractShellCommand {
         TransactionApi api = get(TransactionApi.class);
         Profile newProfile = new Profile();
         ProfileInfo profileInfo = new ProfileInfo();
+        ProfileInfo profileInfo1 = new ProfileInfo();
         newProfile.setId("ID1");
         newProfile.setName("Profile1");
         newProfile.setProfileInfo(profileInfo);
 
         api.addProfileToMap(newProfile, profileInfo);
         System.out.println("Profile added...");
-        for (String net : networkService.getNetworks()) {
+/*        for (String net : networkService.getNetworks()) {
             print("%s", net);
             for (HostId hostId : networkService.getHosts(net)) {
                 print("\t%s", hostId);
             }
-        }
+        }*/
+        System.out.println("Updating Profile ...");
+        boolean isUpdated = api.updateProfile(newProfile, profileInfo1);
+        System.out.println("Update status : "+ isUpdated);
+
     }
 }

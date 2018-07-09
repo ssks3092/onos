@@ -71,7 +71,32 @@ public class TransactionImpl implements TransactionApi{
     }
 
     @Override
-    public void updateProfile(Profile profile, ProfileInfo profileInfo) {
-
+    public boolean updateProfile(Profile profile, ProfileInfo profileInfo) {
+        log.debug("New Data to be updated for phb profiles:{}", profile);
+        int retryCount = 3;
+        boolean isReplaced = false;
+        while (retryCount > 1) {
+            TransactionContext transactionContext = storageService.transactionContextBuilder().build();
+            transactionContext.begin();
+            TransactionalMap<Profile, ProfileInfo> transactionalMap = transactionContext.getTransactionalMap(
+                    usualProfile.name(), USUALPROFILESERIALIZER);
+            ProfileInfo profileInfo1 = transactionalMap.get(profile);
+            isReplaced = transactionalMap.replace(profile, profileInfo1, profileInfo);
+            CompletableFuture<CommitStatus> completableFutureStatus = transactionContext.commit();
+            try {
+                CommitStatus status = completableFutureStatus.get();
+                if (!CommitStatus.SUCCESS.equals(status)) {
+                    log.error("Failed to update PHB Profile data in data store, retrying.");
+                    retryCount--;
+                } else {
+                    return isReplaced;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Thread interrupted in updating NewPhbProfiles", e);
+                retryCount--;
+            }
+        }
+        return isReplaced;
     }
 }
+

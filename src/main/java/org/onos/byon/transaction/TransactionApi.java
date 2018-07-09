@@ -5,6 +5,6 @@ public interface TransactionApi {
 
     void addProfileToMap(Profile profile, ProfileInfo info);
 
-    void updateProfile(Profile profile, ProfileInfo profileInfo);
+    boolean updateProfile(Profile profile, ProfileInfo profileInfo);
 
 }
